@@ -20,11 +20,11 @@ class DisjointSet:
     def __contains__(self,x):
         return x in self.parent
     def add(self,x): # add x as a sentinel node
-        if x in self.parent:
+        if x in self:
             raise ValueError("Node already exists: %s"%x)
         self.parent[x] = None; self.num_below[x] = 1
     def find(self,x): # return the sentinel node of x
-        if x not in self.parent:
+        if x not in self:
             raise ValueError("Node not found: %s"%x)
         explored = Queue(); curr = x
         while self.parent[curr] != None:
@@ -33,9 +33,9 @@ class DisjointSet:
             self.parent[explored.get()] = curr # path compression
         return curr
     def union(self,x,y): # union the sets containing x and y
-        if x not in self.parent:
+        if x not in self:
             raise ValueError("Node not found: %s"%x)
-        if y not in self.parent:
+        if y not in self:
             raise ValueError("Node not found: %s"%y)
         sx = self.find(x); sy = self.find(y)
         if self.num_below[sx] > self.num_below[sy]:
