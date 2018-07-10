@@ -37,11 +37,11 @@ class DisjointSet:
             raise ValueError("Node not found: %s"%x)
         if y not in self.parent:
             raise ValueError("Node not found: %s"%y)
-        px = self.find(x); py = self.find(y)
-        if self.num_below[x] > self.num_below[y]:
-            self.parent[y] = x; self.num_below[x] += self.num_below[y]
+        sx = self.find(x); sy = self.find(y)
+        if self.num_below[sx] > self.num_below[sy]:
+            self.parent[sy] = sx; self.num_below[sx] += self.num_below[sy]
         else:
-            self.parent[x] = y; self.num_below[y] += self.num_below[x]
+            self.parent[sx] = y; self.num_below[sy] += self.num_below[sx]
 
 # parse TN93 input
 def parse_tn93(infile):
