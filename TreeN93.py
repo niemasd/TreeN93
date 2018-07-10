@@ -19,15 +19,29 @@ class DisjointSet:
         self.num_below = dict() # num_below[u] = number of nodes below u (including u) (only current for sentinels)
     def __contains__(self,x):
         return x in self.parent
+    def __len__(self): # number of elements in Disjoint Set
+        return len(self.parent)
     def add(self,x): # add x as a sentinel node
         if x in self:
             raise ValueError("Node already exists: %s"%x)
         self.parent[x] = None; self.num_below[x] = 1
+    def remove(self,x): # remove x from Disjoint Set
+        if x not in self:
+            raise ValueError("Node not found: %s"%x)
+        children = [n for n in self.parent if self.parent[n] == x]
+        if len(children) != 0:
+            if self.parent[x] is None:
+                p = children.pop(); self.parent[p] = None; self.num_below[p] = self.num_below[x] - 1
+            else:
+                p = self.parent[x]; self.num_below[p] -= 1
+            for c in children:
+                self.parent[c] = p
+        del self.parent[x]; del self.num_below[x]
     def find(self,x): # return the sentinel node of x
         if x not in self:
             raise ValueError("Node not found: %s"%x)
         explored = Queue(); curr = x
-        while self.parent[curr] != None:
+        while self.parent[curr] is not None:
             explored.put(curr); curr = self.parent[curr]
         while not explored.empty():
             self.parent[explored.get()] = curr # path compression
