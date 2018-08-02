@@ -45,4 +45,4 @@ TreeCluster.py -i my_sequences.trees.nwk -m leaf_dist_min -t 0.015 -o my_sequenc
 If the input TN93 distance file does not actually contain all *n*(*n*-1)/2 pairwise distances, the tree structure file will contain one tree for each component of the graph *G* = (*V*,*E*) where *V* contains a vertex *v* for each sequence and *E* contains an edge (*u*,*v*,*d*) for each pairwise distance *d* between sequences *u* and *v* in the input, and the clustering file will contain the results of running TreeN93 on each component.
 
 ## Acknowledgements
-Much thanks to Sergei Pond, Steven Weaver, and Joel Wertheim for their excellent work on HIV-TRACE (namely the [tn93](https://github.com/veg/tn93) component).
+Much thanks to [Sergei Pond](http://spond.github.io/CV.js/cv.html), [Steven Weaver](http://www.stevenweaver.org/), and [Joel Wertheim](http://id.ucsd.edu/faculty/wertheim.shtml) for their excellent work on HIV-TRACE (namely the [tn93](https://github.com/veg/tn93) component).
