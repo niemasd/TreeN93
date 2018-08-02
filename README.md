@@ -6,7 +6,7 @@ TreeN93 is a non-parametric Python 3 tool that performs transmission cluster ide
 Let *C*(*S*|*t*) denote a clustering of the sequences in a set *S* using a distance threshold *t* such that, for all pairs of elements (*u*,*v*) in *S*, if the TN93 distance between *u* and *v* is below *t*, *u* and *v* are placed in the same cluster, and the number of clusters is maximized. Let *N*(*S*|*t*) denote the number of clusters containing more than one element in *C*(*S*|*t*). TreeN93 outputs a clustering *C*(*S*|*t'*) that maximizes *N*(*S*|*t'*) over all possible *t'*. In other words, if you were to run HIV-TRACE using all possible thresholds *t* and then pick the threshold *t'* that yielded the clustering with the most non-singleton clusters, that would be the clustering output by TreeN93.
 
 ## Installation
-TreeN93 is written in Python 3 depends on the [TreeSwift](https://github.com/niemasd/TreeSwift) Python package. Once TreeSwift is installed, simply download [TreeN93.py](https://github.com/niemasd/TreeN93/blob/master/TreeN93.py) to your machine and make it executable.
+TreeN93 is written in Python 3 and depends on the [TreeSwift](https://github.com/niemasd/TreeSwift) Python package. Once TreeSwift is installed, simply download [TreeN93.py](https://github.com/niemasd/TreeN93/blob/master/TreeN93.py) to your machine and make it executable.
 
 ## Usage
 TreeN93 can be used as follows:
