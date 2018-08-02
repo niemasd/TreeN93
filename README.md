@@ -35,4 +35,9 @@ zcat my_sequences.fas.gz | tn93 -t 1 -l 1 | TreeN93.py -o my_sequences
 ```
 
 ## Output Files
-TreeN93 outputs two files: a "clustering" file (`prefix.clusters.txt`) and a TreeN93 tree structure (`prefix.trees.nwk`).
+TreeN93 outputs two files: a "clustering" file (`prefix.clusters.txt`) and a TreeN93 tree structure (`prefix.trees.nwk`). The "clustering" file is the resulting clustering *C*(*S*|*t'*) as described above, output in the same format as [TreeCluster](https://github.com/niemasd/TreeCluster). The TreeN93 tree structure is a Newick-format tree that, if cut *t* distance above the leaves, will yield the HIV-TRACE clustering obtained using a distance threshold of *t*. For example, say you want to obtain TreeN93 clusters but you would also like to obtain the clusters that HIV-TRACE would have found with its default threshold of 0.015, you could do so as follows:
+
+```bash
+zcat my_sequences.fas.gz | tn93 -t 1 -l 1 | TreeN93.py -o my_sequences
+TreeCluster.py -i my_sequences.trees.nwk -m leaf_dist_min -t 0.015 -o my_sequences.hivtrace.txt.gz
+```
