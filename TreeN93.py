@@ -7,6 +7,7 @@ try:
     from Queue import Queue
 except ImportError:
     from queue import Queue
+VERBOSE = False
 
 # helper disjoint set class
 class DisjointSet:
@@ -91,25 +92,74 @@ def dist_to_tree(dists):
                 rv.edge_length = d
             else:
                 rv.edge_length = d - rv.label
-    return ['%s;'%r.newick() for r in root.values()]
+    if VERBOSE:
+        stderr.write("Number of Individuals: %d\n"%len(ds))
+    return list(root.values())
+
+# compute the clustering that maximizes the number of non-singleton clusters
+def tree_to_clusters(root):
+    best = None; num_clusters = 0
+    for dist,node in root.traverse_rootdistorder(ascending=False,leaves=False):
+        assert len(node.children) == 2, "TreeN93 tree not fully bifurcating"
+        if node.children[0].is_leaf() and node.children[1].is_leaf(): # merging 2 singletons
+            num_clusters += 1
+        elif not node.children[0].is_leaf() and not node.children[1].is_leaf(): # merging 2 clusters
+            num_clusters -= 1
+        if best is None or num_clusters > best[1]:
+            best = (float(node.label),num_clusters)
+    if VERBOSE:
+        stderr.write("Optimal Threshold: %f\nNumber of Non-Singleton Clusters: %d\n"%best)
+    clusters = list(); to_explore = Queue(); to_explore.put(root)
+    while not to_explore.empty():
+        node = to_explore.get()
+        if node.is_leaf():
+            clusters.append([str(node)])
+        elif float(node.label) > best[0]:
+            for c in node.children:
+                to_explore.put(c)
+        else:
+            clusters.append([str(u) for u in node.traverse_leaves()])
+    return clusters
 
 # main execution
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-i', '--input', required=False, type=str, default='stdin', help="Input TN93 File")
-    parser.add_argument('-o', '--output', required=False, type=str, default='stdout', help="Output Newick File")
+    parser.add_argument('-o', '--outpre', required=True, type=str, help="Output Prefix")
+    parser.add_argument('-v', '--verbose', action="store_true", help="Print Verbose Messages to Standard Error")
     args = parser.parse_args()
+    if args.verbose:
+        VERBOSE = True; global stderr; from sys import stderr
+    if VERBOSE:
+        stderr.write("Input File: %s\n"%args.input)
+        stderr.write("Output Prefix: %s\n"%args.outpre)
     if args.input == 'stdin':
         from sys import stdin as infile
     elif args.input.lower().endswith('.gz'):
         from gzip import open as gopen; infile = gopen(args.input)
     else:
         infile = open(args.input)
-    if args.output == 'stdout':
-        from sys import stdout as outfile
-    else:
-        outfile = open(args.output,'w')
-    for tree in dist_to_tree(parse_tn93(infile)):
-        outfile.write(tree); outfile.write('\n')
-    outfile.close()
+
+    # compute and output TreeN93 trees
+    tree_roots = dist_to_tree(parse_tn93(infile))
+    outfile_trees = open('%s.trees.nwk'%args.outpre,'w')
+    for root in tree_roots:
+        outfile_trees.write(root.newick()); outfile_trees.write(';\n')
+    outfile_trees.close()
+
+    # compute and output clusters maximizing number of non-singleton clusters
+    clusters = list()
+    for root in tree_roots:
+        for cluster in tree_to_clusters(root):
+            clusters.append(cluster)
+    cluster_num = 1
+    outfile_clusters = open('%s.clusters.txt'%args.outpre,'w')
+    outfile_clusters.write("SequenceName\tClusterNumber\n")
+    for c in clusters:
+        if len(c) == 1:
+            outfile_clusters.write(c[0]); outfile_clusters.write('\t-1\n'); continue
+        for u in c:
+            outfile_clusters.write(u); outfile_clusters.write('\t%d\n'%cluster_num)
+        cluster_num += 1
+    outfile_clusters.close()
