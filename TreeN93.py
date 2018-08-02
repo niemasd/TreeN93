@@ -11,10 +11,6 @@ VERBOSE = False
 
 # helper disjoint set class
 class DisjointSet:
-    try:
-        from Queue import Queue
-    except ImportError:
-        from queue import Queue
     def __init__(self): # initialize
         self.parent = dict() # parent[u] = parent of node u
         self.num_below = dict() # num_below[u] = number of nodes below u (including u) (only current for sentinels)
