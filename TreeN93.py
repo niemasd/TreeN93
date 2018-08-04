@@ -121,7 +121,7 @@ def tree_to_clusters(root):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-i', '--input', required=False, type=str, default='stdin', help="Input TN93 File")
+    parser.add_argument('-i', '--input', required=False, type=str, default='stdin', help="Input TN93 or TreeN93 File")
     parser.add_argument('-o', '--outpre', required=True, type=str, help="Output Prefix")
     parser.add_argument('-v', '--verbose', action="store_true", help="Print Verbose Messages to Standard Error")
     args = parser.parse_args()
