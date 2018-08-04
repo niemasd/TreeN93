@@ -16,7 +16,7 @@ usage: TreeN93.py [-h] [-i INPUT] -o OUTPRE [-v]
 
 optional arguments:
   -h, --help                    show this help message and exit
-  -i INPUT, --input INPUT       Input TN93 File (default: stdin)
+  -i INPUT, --input INPUT       Input TN93 or TreeN93 File (default: stdin)
   -o OUTPRE, --outpre OUTPRE    Output Prefix (default: None)
   -v, --verbose                 Print Verbose Messages to Standard Error (default: False)
 ```
