@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 '''
-TreeN93: Construct a hierarchical tree from TN93 distances
+TreeN93: Construct a hierarchical tree from TN93 distances (Niema Moshiri 2018)
 '''
-from treeswift import Node
+from treeswift import Node,read_tree_newick
 try:
     from Queue import Queue
 except ImportError:
@@ -138,11 +138,19 @@ if __name__ == "__main__":
         infile = open(args.input)
 
     # compute and output TreeN93 trees
-    tree_roots = dist_to_tree(parse_tn93(infile))
-    outfile_trees = open('%s.trees.nwk'%args.outpre,'w')
-    for root in tree_roots:
-        outfile_trees.write(root.newick()); outfile_trees.write(';\n')
-    outfile_trees.close()
+    infile_lines = infile.read()
+    if isinstance(infile_lines, bytes):
+        infile_lines = infile_lines.decode().strip().splitlines()
+    else:
+        infile_lines = infile_lines.strip().splitlines()
+    if infile_lines[0][-1] != ';': # not valid Newick tree, so probably TN93 distances
+        tree_roots = dist_to_tree(parse_tn93(infile_lines))
+        outfile_trees = open('%s.trees.nwk'%args.outpre,'w')
+        for root in tree_roots:
+            outfile_trees.write(root.newick()); outfile_trees.write(';\n')
+        outfile_trees.close()
+    else:
+        tree_roots = [read_tree_newick(l).root for l in infile_lines]
 
     # compute and output clusters maximizing number of non-singleton clusters
     clusters = list()
