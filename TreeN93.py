@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 '''
-TreeN93: Construct a hierarchical tree from TN93 distances (Niema Moshiri 2018)
+TreeN93: Non-parametric transmission clustering from pairwise phylogenetic distances (Niema Moshiri 2018)
 '''
 from treeswift import Node,read_tree_newick
 try:
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     from subprocess import run
     import argparse
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-i', '--input', required=False, type=str, default='stdin', help="Input TN93 or TreeN93 File")
+    parser.add_argument('-i', '--input', required=False, type=str, default='stdin', help="Input File")
     parser.add_argument('-t', '--num_threads', required=False, type=int, default=1, help="Number of Threads")
     parser.add_argument('-m', '--mafft_path', required=False, type=str, default='mafft', help="MAFFT Executable Path")
     parser.add_argument('-iq', '--iqtree_path', required=False, type=str, default='iqtree', help="IQ-TREE Executable Path")
