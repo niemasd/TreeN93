@@ -119,17 +119,26 @@ def tree_to_clusters(root):
 
 # main execution
 if __name__ == "__main__":
+    from subprocess import run
     import argparse
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-i', '--input', required=False, type=str, default='stdin', help="Input TN93 or TreeN93 File")
-    parser.add_argument('-o', '--outpre', required=True, type=str, help="Output Prefix")
-    parser.add_argument('-v', '--verbose', action="store_true", help="Print Verbose Messages to Standard Error")
+    parser.add_argument('-t', '--num_threads', required=False, type=int, default=1, help="Number of Threads")
+    parser.add_argument('-m', '--mafft_path', required=False, type=str, default='mafft', help="MAFFT Executable Path")
+    parser.add_argument('-iq', '--iqtree_path', required=False, type=str, default='iqtree', help="IQ-TREE Executable Path")
+    parser.add_argument('-iqm', '--iqtree_model', required=False, type=str, default='MFP', help="IQ-Tree Model")
+    parser.add_argument('-v', '--verbose', action="store_true", help="Verbose Mode")
     args = parser.parse_args()
     if args.verbose:
         VERBOSE = True; global stderr; from sys import stderr
     if VERBOSE:
-        stderr.write("Input File: %s\n"%args.input)
-        stderr.write("Output Prefix: %s\n"%args.outpre)
+        stderr.write("=== INPUTS ===\n")
+        stderr.write("Input File:     %s\n"%args.input)
+        stderr.write("# Threads:      %d\n"%args.num_threads)
+        stderr.write("MAFFT Path:     %s\n"%args.mafft_path)
+        stderr.write("IQ-TREE Path:   %s\n"%args.iqtree_path)
+        stderr.write("IQ-TREE Model:  %s\n"%args.iqtree_model)
+        stderr.write('\n'); stderr.flush()
     if args.input == 'stdin':
         from sys import stdin as infile
     elif args.input.lower().endswith('.gz'):
@@ -138,27 +147,62 @@ if __name__ == "__main__":
         infile = open(args.input)
 
     # compute and output TreeN93 trees
+    if VERBOSE:
+        stderr.write("=== COMPUTE TREEN93 TREES ===\n")
     infile_lines = infile.read()
     if isinstance(infile_lines, bytes):
         infile_lines = infile_lines.decode().strip().splitlines()
     else:
         infile_lines = infile_lines.strip().splitlines()
-    if infile_lines[0][-1] != ';': # not valid Newick tree, so probably TN93 distances
-        tree_roots = dist_to_tree(parse_tn93(infile_lines))
-        outfile_trees = open('%s.trees.nwk'%args.outpre,'w')
+    if infile_lines[0][-1] == ';': # TreeN93 Tree (Newick)
+        if VERBOSE:
+            stderr.write("Input file parsed as TreeN93 tree(s) (Newick)\n")
+        tree_roots = [read_tree_newick(l).root for l in infile_lines]
+    else:
+        if infile_lines[0][0] == '>': # Sequences (FASTA)
+            if VERBOSE:
+                stderr.write("Input file parsed as sequences (FASTA)\n")
+            from tempfile import NamedTemporaryFile
+            tmp = NamedTemporaryFile(mode='w')
+            for l in infile_lines:
+                tmp.write(l); tmp.write('\n')
+            tmp.flush()
+            if VERBOSE:
+                stderr.write("Running MAFFT...\n"); stderr.flush()
+            o = run([args.mafft_path, '--auto', '--thread', str(args.num_threads), tmp.name], capture_output=True)
+            f = open('%s.mafft.aln'%args.input,'wb'); f.write(o.stdout); f.close()
+            f = open('%s.mafft.log'%args.input,'wb'); f.write(o.stderr); f.close()
+            if VERBOSE:
+                stderr.write("Running IQ-TREE...\n"); stderr.flush()
+            run([args.iqtree_path, '-s', '%s.mafft.aln'%args.input, '-pre', '%s.iqtree'%args.input, '-nt', str(args.num_threads), '-ntmax', str(args.num_threads), '-redo'], capture_output=True)
+            if VERBOSE:
+                stderr.write("Computing pairwise distances...\n"); stderr.flush()
+            dm = read_tree_newick('%s.iqtree.treefile'%args.input).distance_matrix()
+            nodes = list(dm.keys())
+            dists = [(dm[nodes[i]][nodes[j]], nodes[i].label, nodes[j].label) for i in range(len(nodes)-1) for j in range(i+1,len(nodes))]
+            dists.sort()
+        else: # Pairwise Distances
+            if VERBOSE:
+                stderr.write("Input file parsed as pairwise distances\n")
+            dists = parse_tn93(infile_lines)
+        tree_roots = dist_to_tree(dists)
+        outfile_trees = open('%s.treen93.nwk'%args.input,'w')
         for root in tree_roots:
             outfile_trees.write(root.newick()); outfile_trees.write(';\n')
         outfile_trees.close()
-    else:
-        tree_roots = [read_tree_newick(l).root for l in infile_lines]
+        if VERBOSE:
+            stderr.write('\n'); stderr.flush()
 
     # compute and output clusters maximizing number of non-singleton clusters
+    if VERBOSE:
+        stderr.write("=== RESULTS ===\n")
+        stderr.write("Computing transmission clusters...\n")
     clusters = list()
     for root in tree_roots:
         for cluster in tree_to_clusters(root):
             clusters.append(cluster)
     cluster_num = 1
-    outfile_clusters = open('%s.clusters.txt'%args.outpre,'w')
+    outfile_clusters = open('%s.clusters.tsv'%args.input,'w')
     outfile_clusters.write("SequenceName\tClusterNumber\n")
     for c in clusters:
         if len(c) == 1:
