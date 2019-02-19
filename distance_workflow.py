@@ -23,6 +23,7 @@ if __name__ == "__main__":
     if VERBOSE:
         stderr.write("=== INPUTS ===\n")
         stderr.write("Input File:     %s\n"%args.input)
+        stderr.write("Output File:    %s\n"%args.output)
         stderr.write("# Threads:      %d\n"%args.num_threads)
         stderr.write("MAFFT Path:     %s\n"%args.mafft_path)
         stderr.write("IQ-TREE Path:   %s\n"%args.iqtree_path)

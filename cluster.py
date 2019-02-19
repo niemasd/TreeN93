@@ -2,7 +2,6 @@
 '''
 Given a TreeN93 tree structure, compute clusters of the leaves
 '''
-from treeswift import read_tree_newick
 try:
     from Queue import Queue
 except ImportError:
@@ -44,7 +43,7 @@ MODES = {
 
 # main execution
 if __name__ == "__main__":
-    from subprocess import run
+    from treeswift import read_tree_newick
     import argparse
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-i', '--input', required=False, type=str, default='stdin', help="Input File")
@@ -58,8 +57,9 @@ if __name__ == "__main__":
         VERBOSE = True; global stderr; from sys import stderr; from time import time
     if VERBOSE:
         stderr.write("=== INPUTS ===\n")
-        stderr.write("Input File: %s\n"%args.input)
-        stderr.write("Mode:       %s\n"%args.mode)
+        stderr.write("Input File:  %s\n"%args.input)
+        stderr.write("Output File: %s\n"%args.output)
+        stderr.write("Mode:        %s\n"%args.mode)
         stderr.write('\n'); stderr.flush()
     if args.input == 'stdin':
         from sys import stdin; treestr = stdin.read().strip()
