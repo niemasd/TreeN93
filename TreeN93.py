@@ -101,9 +101,11 @@ def dist_to_tree(dists,missing):
 
 # compute the clustering that maximizes the number of non-singleton clusters
 def tree_to_clusters(root):
-    best = None; num_clusters = 0
+    best = None; num_clusters = 0; root.resolve_polytomies()
+    for node in root.traverse_postorder(): # fix missing labels caused by resolving polytomies
+        if node.label is None:
+            node.label = node.children[0].label + node.children[0].edge_length
     for dist,node in root.traverse_rootdistorder(ascending=False,leaves=False):
-        assert len(node.children) == 2, "TreeN93 tree not fully bifurcating"
         if node.children[0].is_leaf() and node.children[1].is_leaf(): # merging 2 singletons
             num_clusters += 1
         elif not node.children[0].is_leaf() and not node.children[1].is_leaf(): # merging 2 clusters
