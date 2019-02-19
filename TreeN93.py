@@ -130,7 +130,7 @@ if __name__ == "__main__":
     parser.add_argument('-v', '--verbose', action="store_true", help="Verbose Mode")
     args = parser.parse_args()
     if args.verbose:
-        VERBOSE = True; global stderr; from sys import stderr
+        VERBOSE = True; global stderr; from sys import stderr; from time import time
     if VERBOSE:
         stderr.write("=== INPUTS ===\n")
         stderr.write("Input File:     %s\n"%args.input)
@@ -148,7 +148,7 @@ if __name__ == "__main__":
 
     # compute and output TreeN93 trees
     if VERBOSE:
-        stderr.write("=== COMPUTE TREEN93 TREES ===\n")
+        stderr.write("=== COMPUTE TREEN93 TREES ===\n"); START = time()
     infile_lines = infile.read()
     if isinstance(infile_lines, bytes):
         infile_lines = infile_lines.decode().strip().splitlines()
@@ -211,3 +211,5 @@ if __name__ == "__main__":
             outfile_clusters.write(u); outfile_clusters.write('\t%d\n'%cluster_num)
         cluster_num += 1
     outfile_clusters.close()
+    if VERBOSE:
+        END = time(); stderr.write("Total runtime: %s seconds" % (END-START))
