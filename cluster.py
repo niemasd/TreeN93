@@ -2,7 +2,7 @@
 '''
 Given a TreeN93 tree structure, compute clusters of the leaves
 '''
-from treeswift import Node,read_tree_newick
+from treeswift import read_tree_newick
 try:
     from Queue import Queue
 except ImportError:
