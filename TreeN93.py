@@ -68,7 +68,9 @@ def parse_tn93(infile):
     dists.sort(); return dists
 
 # create TreeN93 tree from input TN93 distance file
-def dist_to_tree(dists):
+def dist_to_tree(dists,missing):
+    if missing < dists[-1][0]:
+        raise ValueError("Missing value must be larger than max distance")
     root = dict() # root[s] = the root of the tree corresponding to set s
     ds = DisjointSet()
     for d,u,v in dists:
@@ -90,6 +92,11 @@ def dist_to_tree(dists):
                 rv.edge_length = d - rv.label
     if VERBOSE:
         stderr.write("Number of Individuals: %d\n"%len(ds))
+    if len(root.values()) > 1:
+        toproot = Node(label=missing)
+        for r in root.values():
+            toproot.add_child(r); r.edge_length = missing - r.label
+        return [toproot]
     return list(root.values())
 
 # compute the clustering that maximizes the number of non-singleton clusters
@@ -124,8 +131,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-i', '--input', required=False, type=str, default='stdin', help="Input File")
     parser.add_argument('-t', '--num_threads', required=False, type=int, default=1, help="Number of Threads")
-    parser.add_argument('-m', '--mafft_path', required=False, type=str, default='mafft', help="MAFFT Executable Path")
-    parser.add_argument('-iq', '--iqtree_path', required=False, type=str, default='iqtree', help="IQ-TREE Executable Path")
+    parser.add_argument('-m', '--missing', required=False, type=float, default=float('inf'), help="Value for Missing Distances")
+    parser.add_argument('-mafft', '--mafft_path', required=False, type=str, default='mafft', help="MAFFT Executable Path")
+    parser.add_argument('-iqtree', '--iqtree_path', required=False, type=str, default='iqtree', help="IQ-TREE Executable Path")
     parser.add_argument('-iqm', '--iqtree_model', required=False, type=str, default='MFP', help="IQ-Tree Model")
     parser.add_argument('-v', '--verbose', action="store_true", help="Verbose Mode")
     args = parser.parse_args()
@@ -185,7 +193,7 @@ if __name__ == "__main__":
             if VERBOSE:
                 stderr.write("Input file parsed as pairwise distances\n")
             dists = parse_tn93(infile_lines)
-        tree_roots = dist_to_tree(dists)
+        tree_roots = dist_to_tree(dists,args.missing)
         outfile_trees = open('%s.treen93.nwk'%args.input,'w')
         for root in tree_roots:
             outfile_trees.write(root.newick()); outfile_trees.write(';\n')
