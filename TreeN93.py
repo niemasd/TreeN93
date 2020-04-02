@@ -78,18 +78,17 @@ if __name__ == "__main__":
         from gzip import open as gopen; infile = gopen(args.input).read().decode().strip().splitlines()
     else:
         infile = open(args.input).read().strip().splitlines()
-    if args.output == 'stdout':
-        from sys import stdout as outfile
-    elif args.output.lower().endswith('.gz'):
-        from gzip import open as gopen; outfile = gopen(args.output,'w')
-    else:
-        outfile = open(args.output,'w')
 
     # compute and output TreeN93 tree
     if VERBOSE:
         stderr.write("=== COMPUTE TREEN93 TREE ===\n"); START = time()
     dists = parse_tn93(infile)
     root = dist_to_tree(dists,args.missing)
-    outfile.write(root.newick()); outfile.write(';\n'); outfile.close()
+    if args.output == 'stdout':
+        print(root.newick())
+    elif args.output.lower().endswith('.gz'):
+        f = gopen(args.output,'wb',9); f.write((('%s;\n' % root.newick()).encode())); f.close()
+    else:
+        f = open(args.output,'w'); f.write('%s;\n' % root.newick()); f.close()
     if VERBOSE:
         END = time(); stderr.write("Total runtime: %s seconds\n" % (END-START))

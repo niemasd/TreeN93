@@ -67,25 +67,24 @@ if __name__ == "__main__":
         from gzip import open as gopen; treestr = gopen(args.input).read().decode().strip()
     else:
         treestr = open(args.input).read().strip()
-    if args.output == 'stdout':
-        from sys import stdout as outfile
-    elif args.output.lower().endswith('.gz'):
-        from gzip import open as gopen; outfile = gopen(args.output,'w')
-    else:
-        outfile = open(args.output,'w')
 
     # compute and output clusters
     if VERBOSE:
         stderr.write("=== RESULTS ===\n")
         stderr.write("Computing transmission clusters...\n"); START = time()
     clusters = MODES[args.mode](read_tree_newick(treestr))
-    cluster_num = 1; outfile.write("SequenceName\tClusterNumber\n")
+    cluster_num = 1; out_lines = ["SequenceName\tClusterNumber"]
     for c in clusters:
         if len(c) == 1:
-            outfile.write(c[0]); outfile.write('\t-1\n'); continue
+            out_lines.append('%s\t-1' % c[0]); continue
         for u in c:
-            outfile.write(u); outfile.write('\t%d\n'%cluster_num)
+            out_lines.append('%s\t%d' % (u, cluster_num))
         cluster_num += 1
-    outfile.close()
+    if args.output == 'stdout':
+        print('\n'.join(out_lines))
+    elif args.output.lower().endswith('.gz'):
+        f = gopen(args.output, 'wb', 9); f.write('\n'.join(out_lines).encode()); f.close()
+    else:
+        f = open(args.output, 'w'); f.write('\n'.join(out_lines)); f.close()
     if VERBOSE:
         END = time(); stderr.write("Total runtime: %s seconds\n" % (END-START))
