@@ -83,8 +83,8 @@ if __name__ == "__main__":
     if args.output == 'stdout':
         print('\n'.join(out_lines))
     elif args.output.lower().endswith('.gz'):
-        f = gopen(args.output, 'wb', 9); f.write('\n'.join(out_lines).encode()); f.close()
+        f = gopen(args.output, 'wb', 9); f.write('\n'.join(out_lines).encode()); f.write('\n'.encode()); f.close()
     else:
-        f = open(args.output, 'w'); f.write('\n'.join(out_lines)); f.close()
+        f = open(args.output, 'w'); f.write('\n'.join(out_lines)); f.write('\n'); f.close()
     if VERBOSE:
         END = time(); stderr.write("Total runtime: %s seconds\n" % (END-START))
