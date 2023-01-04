@@ -7,7 +7,7 @@ Let *C*(*S*|*t*) denote a clustering of the sequences in a set *S* using a dista
 ## Web App
 TreeN93 has recently been developed into a web app that runs fully client-side in the user's web browser (i.e., the user's data are not sent anywhere) and that is much more user-friendly. We highly recommend utilizing the web app if your dataset is small enough to run fast enough, and we only recommend utilizing the command-line Python tool if your dataset is too large to run reasonably fast in the web browser.
 
-https://github.com/Niema-Lab/TreeN93
+https://niema-lab.github.io/TreeN93
 
 ## Installation
 TreeN93 is written in Python 3 and depends on the [TreeSwift](https://github.com/niemasd/TreeSwift) and [NiemaDS](https://github.com/niemasd/NiemaDS) Python packages. Once they are installed, simply download [TreeN93.py](https://github.com/niemasd/TreeN93/blob/master/TreeN93.py) to your machine and make it executable.
