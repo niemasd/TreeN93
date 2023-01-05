@@ -5,7 +5,7 @@ TreeN93 is a non-parametric Python 3 tool that performs transmission cluster ide
 Let *C*(*S*|*t*) denote a clustering of the sequences in a set *S* using a distance threshold *t* such that, for all pairs of elements (*u*,*v*) in *S*, if the phylogenetic distance between *u* and *v* is below *t*, *u* and *v* are placed in the same cluster, and the number of clusters is maximized. Let *N*(*S*|*t*) denote the number of clusters containing more than one element in *C*(*S*|*t*). TreeN93 outputs a clustering *C*(*S*|*t'*) that maximizes *N*(*S*|*t'*) over all possible *t'*. In other words, if you were to run HIV-TRACE using all possible thresholds *t* and then pick the threshold *t'* that yielded the clustering with the most non-singleton clusters, that would be the clustering output by TreeN93.
 
 ## Web App
-TreeN93 has recently been developed into a web app that runs fully client-side in the user's web browser (i.e., the user's data are not sent anywhere) and that is much more user-friendly. We highly recommend utilizing the web app if your dataset is small enough to run fast enough, and we only recommend utilizing the command-line Python tool if your dataset is too large to run reasonably fast in the web browser.
+One of my past students, [Hannah Fisher](https://github.com/hannah-fisher), ported TreeN93 into a web app that runs fully client-side in the user's web browser (i.e., the user's data are not sent anywhere) and that is much more user-friendly. We highly recommend utilizing the web app if your dataset is small enough to run fast enough, and we only recommend utilizing the command-line Python tool if your dataset is too large to run reasonably fast in the web browser.
 
 https://niema-lab.github.io/TreeN93
 
