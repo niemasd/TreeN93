@@ -67,3 +67,8 @@ zcat my_sequences.fas.gz | tn93 -t 1 -l 1 | TreeN93.py
 
 ## Acknowledgements
 Much thanks to [Sergei Pond](http://spond.github.io/CV.js/cv.html), [Steven Weaver](http://www.stevenweaver.org/), and [Joel Wertheim](http://id.ucsd.edu/faculty/wertheim.shtml) for their excellent work on HIV-TRACE (namely the [tn93](https://github.com/veg/tn93) component).
+
+## Citing TreeN93
+If you use TreeN93 in your work, please cite:
+
+> Moshiri N (2018). "TreeN93: a non-parametric distance-based method for inferring viral transmission clusters." *bioRxiv*. [doi:10.1101/383190](https://doi.org/10.1101/383190)
